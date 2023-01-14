@@ -2,42 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Welcome to Teesla</title>
-
-    <!-- include an external style sheet -->
-    <link rel="stylesheet" href="style.css" />
-
-    <!-- include an external JavaScript file -->
-    <script src="script.js" defer></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!- include google icons -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      href="https://fonts.googleapis.com/css2?family=Ranchers&display=swap"
       rel="stylesheet"
     />
+
+    <title>Restaurant Locater</title>
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+
+    <!-- import the webpage's javascript file -->
+    <script src="/script.js"></script>
   </head>
-
-  <!-- include font families -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Arima+Madurai:wght@100&family=Baloo+2&family=Press+Start+2P&display=swap"
-    rel="stylesheet"
-  />
-
   <body>
-    <h1>Goodbye<h1>
-    <div id="navButtons">
-      <a href="./?page=0"
-        ><span class="navEntry">Home</span><i class="material-icons">home</i></a
-      >
-      <a href="./?page=1"
-        ><span class="navEntry">Search Users</span
-        ><i class="material-icons">search</i></a
-      >
+    <h1 id="title">Restaurant Locater Tool</h1>
+    <p>&nbsp;&nbsp;This restaurant finder is eager to serve you. Please give google your coordinates so that it can do its job.<br>
+      &nbsp;&nbsp;Hit <b>submit</b> to search for up to 20 locations. 
+      To get directions for any location, simply click on its marker. <br>
+      &nbsp;&nbsp;<small>P.S. The search bar is functional. If you search 'sushi', you'll get a bunch of Japanese places.</small></p>
+    <div class="search-container">
+      <input
+        type="text"
+        placeholder="Search by keyword..."
+        id="searchbar"
+        name="search"
+      />
+      <button type="submit" id="searchbut" onclick="search()">Submit</button>
+      <button type="submit" class="togglebutton" id ="tb1" onclick="distance()">Give me the 3 CLOSEST restaurants</button>
+      <button type="submit" class="togglebutton" id ="tb2" onclick="rating()">Give me the 3 HIGHEST RATED restaurants</button>
+      <button type="submit" class="togglebutton" id ="tb3" onclick="transport()">Taking the bus?</button>
     </div>
+    <div class="button-container" id="bcont">
+      <button type="submit" class="butdir" id ="b1">1</button>
+      <button type="submit" class="butdir" id ="b2">2</button>
+      <button type="submit" class="butdir" id ="b3">3</button>
+    </div>
+    <div class="map" id="googleMap"></div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwAAs60jsKtcYU4Y5M5DGX2cuNXzSbQrI&libraries=places&callback=myMap"></script>
+    <!-- include the Glitch button to show what the webpage is about and
+          to make it easier for folks to view source and remix -->
+    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
+    <script src="https://button.glitch.me/button.js" defer></script>
   </body>
 </html>

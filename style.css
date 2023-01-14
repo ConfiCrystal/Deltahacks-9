@@ -1,289 +1,63 @@
-/* Our default values set as CSS variables */
-:root {
-  --paleblue: #f0f8ff;
-  --purple: #7f7caf;
-  --blue: DarkSlateBlue;
-  --red: #f7786b;
-  --pink: #f7cac9;
-}
-
-/* Basic page style resets */
-* {
-  box-sizing: border-box;
-}
-
-/* Import fonts */
-@font-face {
-  font-family: HK Grotesk;
-  src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027")
-    format("opentype");
-}
-
-@font-face {
-  font-family: HK Grotesk;
-  font-weight: bold;
-  src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437")
-    format("opentype");
-}
+/*  :) <-Glitch font makes a lopsided smiley face!  */
 
 body {
-  font-family: HK Grotesk;
-  background-color: var(--paleblue);
-  box-sizing: border-box;
-  margin: 0;
+  font-family: helvetica, arial, sans-serif;
+  margin: 2em;
 }
 
-#navButtons {
-  font-family: "Arima Madurai", cursive;
-  font-weight: bold;
-  font-size: calc(0.5vw + 16px);
-  text-align: center;
-  background-color: ghostwhite;
-  padding: 5px;
-  padding-top: calc(0.5vw + 9px);
-  padding-bottom: calc(0.5vw + 8px);
-  border-bottom: 3px solid var(--blue);
+h1 {
+  font-family: 'Ranchers', cursive;
+  font-style: italic;
+  color: grey;
 }
 
-#navButtons a {
-  color: purple;
-  text-decoration: none;
-  padding-left: calc(0.5vw + 10px);
-  padding-right: calc(0.5vw + 10px);
+/* Smaller map for easier loading with my slow internet */
+.map {
+  width: 70%;
+  height: 600px;
+  float: left;
 }
 
-#navButtons a:hover {
-  color: var(--blue);
-  letter-spacing: 0.01em;
+.search-container {
+  margin: 1em;
 }
 
-/* by default, the menu icons are hidden */
-#navButtons a .material-icons {
+.search-container input[type=text] {
+  padding: 6px;
+  margin-top: 8px;
+  font-size: 17px;
+  border-color: grey;
+}
+
+.search-container button {
+  padding: 6px;
+  margin-top: 8px;
+  margin-right: 10px;
+  background: #ddd;
+  font-size: 17px;
+  border-width: 2px;
+  border-color: grey;
+  cursor: pointer;
+}
+
+.search-container button:hover {
+  background: #ccc;
+}
+
+.search-container .togglebutton {
+  background: indianred;
+}
+
+.search-container .togglebutton:hover {
+  background: indianred;
+}
+
+.button-container {
   display: none;
+  margin: 0.5em;
 }
 
-/* resposive design for navbar: on screens smaller than 650, hide all menu items */
-@media screen and (max-width: 650px) {
-  #navButtons {
-    border-bottom: 2px solid var(--blue);
-    padding-bottom: calc(0.5vw + 1px);
-  }
-  #navButtons a .navEntry {
-    display: none;
-  }
-
-  /* activate icons to be visible */
-  #navButtons a .material-icons {
-    font-size: calc(1.5vw + 20px);
-    display: inline;
-  }
-}
-
-.smallBut {
-  background-color: forestgreen;
-  padding: 10px;
-  font-size: 1.2em;
-  border-radius: 3px;
-}
-
-.smallBut:hover {
-  cursor: pointer;
-}
-
-.title {
-  font-size: calc(2vw + 10px);
-}
-
-#baseForm {
-  color: var(--blue);
-}
-
-#baseForm label {
-  display: inline-block;
-  margin: 5px 0;
-}
-
-input[type="text"],
-select {
-  margin: 10px 0;
-  display: inline-block;
-  border: 1px solid var(--purple);
-  border-radius: 3px;
-}
-
-#chooseGrade {
-  visibility: hidden;
-}
-
-#about {
-  width: 100%;
-  padding: 10px 20px;
-  margin: 10px 0;
-  display: inline-block;
-  border: 1px solid var(--purple);
-  border-radius: 3px;
-}
-
-#submitBut {
-  text-align: center;
-  padding: 5px 10px;
-  font-family: HK Grotesk;
-  font-weight: bold;
-  font-size: 1.4em;
-  color: var(--red);
-  background-color: white;
-  border: 2px solid var(--pink);
-  border-radius: 10px;
-}
-
-.error {
-  color: red;
-}
-
-#submitBut:hover {
-  cursor: pointer;
-  font-size: 1.5em;
-  color: red;
-}
-
-/* Page structure */
-.wrapper {
-  display: grid;
-  place-items: center;
-  margin: 0 1rem;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-#imageGrid {
-  display: grid;
-  width: 100%;
-  text-align: center;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  grid-gap: 2px;
-}
-
-#imageGrid img:hover {
-  cursor: pointer;
-}
-
-/* Light Box CSS */
-.hidden {
-  display: none;
-}
-
-.unhidden {
-  display: block;
-}
-
-#lightbox {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-#positionBigImage {
-  position: absolute;
-  top: 15px;
-  left: 0px;
-  width: 100%;
-  height: 100vh;
-}
-
-#boundaryBigImage {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-#x {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 30px;
+.butdir {
+  width: auto;
   height: 30px;
-  z-index: 2;
-  background-color: white;
-  border-radius: 50%;
-}
-
-#x:hover {
-  cursor: pointer;
-}
-
-.pointers {
-  position: fixed;
-  top: 45vh;
-  font-size: 5vh;
-  letter-spacing: -10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  user-select: none;
-  color: white;
-  text-shadow: 2px 2px var(--purple);
-}
-
-.pointers:hover {
-  cursor: pointer;
-}
-
-#left {
-  left: 2vw;
-}
-
-#right {
-  right: 2vw;
-}
-
-.thumb {
-  padding: 20px;
-  height: 180px;
-}
-
-#text {
-  background-color: white;
-}
-
-.downloadButton {
-  font-family: "Press Start 2P", cursive;
-  font-size: calc(0.5vw + 10px);
-  color: var(--pink);
-}
-
-.downloadButton:hover {
-  cursor: pointer;
-  font-size: 1.5em;
-  color: yellow;
-}
-
-/* searchbar style */
-
-#searchImages {
-  padding: 12px;
-  font-size: calc(0.5vw + 10px);
-}
-
-#go {
-  padding: 12px;
-  font-weight: bold;
-  background-color: var(--pink);
-  border: 2px solid var(--purple);
-}
-
-#go:hover {
-  cursor: pointer;
-  font-size: 1.1em;
 }
