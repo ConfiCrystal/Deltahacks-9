@@ -1,34 +1,185 @@
-/*  :) <-Glitch font makes a lopsided smiley face!  */
+:root {
+  --black: #362f2f;
+  --blue: #38B6FF;
+  --yellow-green: #BCD979;
+  --olivine: #9DAD6F;
+  --light-borwn: #7D6D61;
+  --earth-brown: #5E574D;
+}
+
+* { box-sizing: border-box; }
 
 body {
+  height: 100%;
+  width: 100%;
   font-family: helvetica, arial, sans-serif;
-  margin: 2em;
+  margin: 0;
+  background-color: var(--earth-brown);
+}
+
+#fanci {
+  font-family: 'Courgette', cursive;
+  text-shadow: 2px 2px var(--black);
+  color: var(--blue);
+  font-size: 1.42em;
 }
 
 h1 {
-  font-family: 'Ranchers', cursive;
-  font-style: italic;
-  color: grey;
+  font-family: 'Merriweather', serif;
+  color: var(--earth-brown);
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1vw;
+  margin-right: 1vw;
+}
+
+#travelOptionIcons {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */
+}
+
+#travelOptionIcons li {
+  float: left;
+}
+
+/* Style for navbar, titlebar */
+#nav {
+  background-color: var(--yellow-green);
+  margin: 0;
+  padding: 0.5em;
+  border-bottom: 0.8vh solid var(--olivine);
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  grid-area: n;
+}
+
+#nav h1 {
+ float: left;
+}
+
+#logo {
+  float: left;
+  width: 45px;
+  margin-top: 10px
+}
+
+#scheduleCon {
+  grid-area: s;
+}
+
+#scheduleBar {
+  background-color: var(--light-borwn);
+  margin: 0;
+  padding: 0.5em;
+  border-bottom: 0.3vh solid var(--olivine);
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.subText {
+  color: ghostwhite;
+  font-family: "merryweather";
+  float: center;
+  text-align: center;
+  
+}
+
+#mapCon {
+  grid-area: m;
+}
+
+#mapInput {
+  background-color: var(--blue);
+  grid-area: mi;
+}
+
+#infoCon {
+  grid-area: i;
+}
+
+#infoBar {
+  background-color: var(--light-borwn);
+  margin: 0;
+  padding: 0.5em;
+  border-bottom: 0.3vh solid var(--olivine);
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+#chooseMode {
+  width: 100%;
+  text-align: center;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+}
+
+#travelOptionIcons span {
+  color: ghostwhite;
+}
+
+.bottomButtons {
+  margin: 0;
+  left: 50%;
+  text-align: center;
+}
+
+/* GRID */
+#grid-container {
+  display: grid;
+  max-height: 100vh;
+  grid-template-columns: 25vw 50vw 25vw;
+  grid-template-areas:
+    "n n n"
+    "s mi i"
+    "s m i";
 }
 
 /* Smaller map for easier loading with my slow internet */
 .map {
-  width: 70%;
-  height: 600px;
+  width: 100%;
+  height: 500px;
   float: left;
 }
 
-.search-container {
-  margin: 1em;
+#search-container {
+  text-align: center;
 }
 
-.search-container input[type=text] {
+.material-symbols-outlined {
+  color: var(--yellow-green);
+}
+
+input[type="text"] {
+  border-width: 0;
+  background-color: #fdfdfd;
+  margin: 0;
+  width: 90%;
+  font-size: 25px;
+  padding: 5px;
+  float: left;
+}
+
+#searchBut {
   padding: 6px;
-  margin-top: 8px;
-  font-size: 17px;
-  border-color: grey;
+  float: left;
+  color: white;
+  font-weight: bold;
+  width: 10%;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
+#searchBut:hover {
+  cursor: pointer;
+  color: royalblue;
+}
+
+/*
 .search-container button {
   padding: 6px;
   margin-top: 8px;
@@ -61,3 +212,4 @@ h1 {
   width: auto;
   height: 30px;
 }
+*/

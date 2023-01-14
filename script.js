@@ -1,64 +1,146 @@
-// When loading maps, start by loading a placeholder to later edit.
+// API key
+var urlkey = "&key=AIzaSyCYfPlorBy4ca8HC42iF6duYZUbfR3ubYM";
+
+// Function myMap
+// Ran on init
+// Connects to google api and establishes map
 function myMap() {
-  map = new google.maps.Map(document.getElementById("googleMap"), {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 0
-  });
+  // Defaults
+  // General map
+  map = new google.maps.Map(document.getElementById("googleMap"));
   infoWindow = new google.maps.InfoWindow();
 
-  // Edit the placeholder with new data.
+  // Variables
+  window.travelMode = 'DRIVING';
+  window.buttonDefaults = {};
+
+  // Objects
+  window.directionsService = new google.maps.DirectionsService();
+  window.directionsRenderer = new google.maps.DirectionsRenderer({
+    suppressMarkers : true
+  });
+  window.directionsRenderer.setMap(map);
+  window.markers = [new google.maps.Marker({position : {lat : 0, lng : 0}}), 
+                    new google.maps.Marker({position : {lat : 0, lng : 0}, label : "A"})];
+
+  // Listeners
+  map.addListener("click", (mapsMouseEvent) => {
+    window.clickPos = mapsMouseEvent.latLng;
+    markerOverride(0, clickPos);
+  });
+
+  // document.getElementById("myBtn").addEventListener("click", buttonToggle("myBtn"));
+
   // First, ask the user for permission to use location.
   // If geolocation is successful, retrieve user's coordinates.
-  if (navigator.geolocation) {
-    // watchposition constantly monitor's user's position
-    navigator.geolocation.getCurrentPosition(function(position) {
-      //Store lat and long in global variable pos.
+  nav = navigator.geolocation
+  if(nav) {
+    nav.getCurrentPosition(function(position) {
       window.pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
+        lat : position.coords.latitude,
+        lng : position.coords.longitude
       };
-
-      // special code for early location
-      console.log(window.pos)
-      var urllocation = JSON.stringify(window.pos)
-      .replace('{"lat":', "")
-      .replace("}", "")
-      .replace('"lng":', "")
-      .trim();
-      console.log("Current location is: " + urllocation);
-
-      
       // Now, edit the map properties to match retrived location and zoom in.
-      map.setZoom(15);
+      map.setZoom(13);
       map.setCenter(window.pos);
-      var marker = new google.maps.Marker({
-        position: window.pos
-      });
-      marker.setMap(map);
+
+      // First position default
+      markerOverride(1, window.pos);
+
+      // temp
+      markerAdd({lat : 43.260217, lng : -79.911344})
+
     }),
-      // Increases geolocation accuracy, not too sure how it does this.
-      // Without it, geolocation may load the location of ISP server, which could be hundreds of kilometers away.
-      // Five second timeout somewhat helps it pinpoint.
+      // Increases geolocation accuracy
       {
-        enableHighAccuracy: true,
+        enableHighAccuracy : true,
         timeout: 5000
       };
   } else {
-    // If browser doesn't support Geolocation, inform the unfortunate user.
-    document.getElementById("title").innerHTML =
-      "Please enable geolocation services.";
+    // If browser doesn't support Geolocation, inform the user
+    window.alert("Please enable geolocation services!");
     handleLocationError(false, infoWindow, map.getCenter());
   }
-  window.directionsService = new google.maps.DirectionsService();
-  window.directionsRenderer = new google.maps.DirectionsRenderer({
-    // SUPPRESS the ugly red marker that appears and kill the map's annoying habit of zooming in on everything.
-    suppressMarkers: true,
-    preserveViewport: true
-  });
-  // Set map to render dirctions on. No directions have been rendered yet.
-  window.directionsRenderer.setMap(map);
 }
 
+//Error screen for geolocation failure
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(
+    browserHasGeolocation
+      ? "Error: The Geolocation service failed."
+      : "Error: Your browser doesn't support geolocation."
+  );
+  infoWindow.open(map);
+}
+
+// Replaces marker with new position
+function markerOverride (marker, pos) {
+  window.markers[marker].position = pos
+  window.markers[marker].setMap(null);
+  window.markers[marker].setMap(map);
+}
+
+// Adds a new marker
+function markerAdd (pos) {
+  l = window.markers.length;
+  conv = b26(l);
+  ch = charFromInt(l);
+  name = ch.join('');
+
+  window.markers.push(new google.maps.Marker({position : pos, label : name}));
+  window.markers[l].setMap(map);
+}
+
+// converts a number into an array in base 26
+function b26 (n) {
+  l = []
+  while (true) {
+    if (n == 0) {
+      break;
+    }
+    l.push(n % 26)
+    n = Math.floor(n / 26)
+  }
+  l.reverse();
+  return l
+}
+
+// converts a list of numbers into a list of characters
+function charFromInt (l) {
+  li = []
+  for (n in l) {
+    li.push(String.fromCharCode(n+64))
+  }
+  return li
+}
+
+// Determines fastest and alternate routes from two saved positions
+function findRoute() {
+  var request = {
+    origin : window.markers[1].position,
+    destination : window.markers[2].position,
+    travelMode : window.travelMode,
+    provideRouteAlternatives : true
+  }
+
+  window.directionsService.route(request, function(result, status) {
+    if (status == "OK") {
+      window.directionsRenderer.setDirections(result);
+    };
+  });
+}
+
+// Button toggle
+function buttonToggle(buttonName) {
+  if (window.buttonDefaults.buttonName) {
+    window.buttonDefaults.buttonName = false;
+  } else {
+    window.buttonDefaults.buttonName = true;
+  };
+}
+
+// ------------------------------------------------------------ e ------------------------------------------------------------
 // Discovered bug. Impelemented searchnew variable to fix.
 // Tells my directions that a new search has been made, preventing directions toggle from dispalying leftover directions.
 var searchnew = 0;
@@ -105,16 +187,9 @@ function transport() {
   createDirections();
 }
 
-//Error screen for geolocation failure
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-  infoWindow.setPosition(pos);
-  infoWindow.setContent(
-    browserHasGeolocation
-      ? "Error: The Geolocation service failed."
-      : "Error: Your browser doesn't support geolocation."
-  );
-  infoWindow.open(map);
-}
+// ------------------------------------------------------------ e ------------------------------------------------------------
+
+
 // This array will count how many restaurant markers I've got on the map
 var markersArray = [];
 
@@ -134,9 +209,6 @@ function search() {
     }
   });
 
-  // Gets rid of 3 direction buttons everything seach is hit
-  document.getElementById("bcont").style.display = "none";
-
   // Clears all markers. I put the markers into an array.
   for (var i = 0; i < markersArray.length; i++) {
     markersArray[i].setMap(null);
@@ -146,7 +218,7 @@ function search() {
   // Do you like making brothy soup? You throw a bunch of edibles into the pot and hope it works.
   // That is exactly what I am doing here with this fetch URL. First, I gather bits of information.
   var urlhead =
-    "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
+    "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
 
   // Add user's current location to pot
   var urllocation = JSON.stringify(window.pos)
@@ -171,12 +243,9 @@ function search() {
     var urltail = "&radius=3000&type=restaurant&keyword=";
   }
 
-  // Add teacher's API key to pot
-  var urlkey = "&key=AIzaSyCYfPlorBy4ca8HC42iF6duYZUbfR3ubYM";
 
   // Stir it all together into urlmain. This is the final product URL.
   var urlmain = urlhead + urllocation + urltail + input + urlkey;
-  console.log("url request is: " + urlmain);
   console.log("JSON sample: " + urlmain);
 
   // This fetch is formatted for search bar and its requests
@@ -196,12 +265,6 @@ function search() {
         data.results = data.results.sort(function(a, b) {
           return b.rating - a.rating;
         });
-        // Display hidden blocks and fill thier inner HTMl with names of 3 top restaurants.
-        document.getElementById("bcont").style.display = "block";
-        for (var i = 0; i < 3; i++) {
-          document.getElementById("b" + (i + 1)).innerHTML =
-            data.results[i].name;
-        }
       } else {
         // If nothing is toggled, just show all 20 places
         window.length = data.results.length;
