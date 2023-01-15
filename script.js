@@ -1,5 +1,79 @@
+// TEST
+function testing() {
+  console.log("you are testing.")
+}
+
+// Called when ALL the HTML has finished loading
+document.addEventListener('DOMContentLoaded', function () {
+  window.currentMode = 0; // set current travel Mode to walking by default
+  // Call the function to give node0 special color
+  chooseMode(0)
+});
+
 // API key
 var urlkey = "&key=AIzaSyCYfPlorBy4ca8HC42iF6duYZUbfR3ubYM";
+markersT = []
+
+// Travel Mode Selection
+function chooseMode(nodeNum) {
+  if (window.currentMode <= 6) {
+    document.getElementById("m" + window.currentMode).style.color = "var(--yellow-green)";
+  } else {
+    document.getElementById("m" + window.currentMode).src = "/transporticons/" + window.currentMode + ".png";
+  }
+  if (nodeNum <= 6) {
+    document.getElementById("m" + nodeNum).style.color = "var(--blue)";
+  } else {
+    document.getElementById("m" + nodeNum).src = "/transporticons/" + nodeNum + "b.png";
+  }
+  window.currentMode = nodeNum; // this variable stores the current mode of travel
+
+  var state = false
+  switch (nodeNum) {
+    case 0:
+      if (convertTravel()) state = true
+      break;
+    case 1:
+      
+      break;
+    case 2:
+      
+      break;
+    case 3:
+      
+      break;
+    case 4:
+      
+      break;
+    case 5:
+      
+      break;
+    case 6:
+       
+      break;
+    case 7:
+      
+      break;
+    case 8:
+      
+      break;
+    case 9:
+      
+      break;
+    case 10:
+      
+      break;
+    case 11:
+      
+      break;
+  }
+  if (state == false) return
+}
+
+// converts to other travel modes
+function convertTravel (mode) {
+  
+}
 
 // Function myMap
 // Ran on init
@@ -11,16 +85,17 @@ function myMap() {
   infoWindow = new google.maps.InfoWindow();
 
   // Variables
-  window.travelMode = 'DRIVING';
-  window.buttonDefaults = {};
+  window.travelMode = 'WALKING';
 
   // Objects
+  geocoder = new google.maps.Geocoder()
   window.directionsService = new google.maps.DirectionsService();
-  window.directionsRenderer = new google.maps.DirectionsRenderer({
+  window.directionRenderers = [new google.maps.DirectionsRenderer({
     suppressMarkers : true
-  });
-  window.directionsRenderer.setMap(map);
-  window.markers = [new google.maps.Marker({position : {lat : 0, lng : 0}}), 
+  })];
+
+  window.directionRenderers[0].setMap(map);
+  window.markers = [new google.maps.Marker({position : null}), 
                     new google.maps.Marker({position : {lat : 0, lng : 0}, label : "A"})];
 
   // Listeners
@@ -45,10 +120,19 @@ function myMap() {
       map.setCenter(window.pos);
 
       // First position default
-      markerOverride(1, window.pos);
+      window.markers[1].position = window.pos
+      window.markers[1].setMap(null);
+      window.markers[1].setMap(map);
 
-      // temp
-      markerAdd({lat : 43.260217, lng : -79.911344})
+      // Search box init
+      var input = document.getElementById('pac-input')
+      var searchBox = new google.maps.places.SearchBox(input)
+
+      // Listen for the event fired when the user selects a prediction and retrieve
+      // more details for that place.
+      searchBox.addListener("places_changed", () => {
+        search()
+      });
 
     }),
       // Increases geolocation accuracy
@@ -61,6 +145,70 @@ function myMap() {
     window.alert("Please enable geolocation services!");
     handleLocationError(false, infoWindow, map.getCenter());
   }
+}
+
+// Search
+function search () {
+  const places = searchBox.getPlaces();
+
+  if (places.length == 0) {
+    return;
+  }
+
+  // Clear out the old markers.
+  markersT.forEach((marker) => {
+    marker.setMap(null);
+  });
+  markersT = [];
+
+  // For each place, get the icon, name and location.
+  const bounds = new google.maps.LatLngBounds();
+
+  places.forEach((place) => {
+    if (!place.geometry || !place.geometry.location) {
+      console.log("Returned place contains no geometry");
+      return;
+    }
+
+    const icon = {
+      url: place.icon,
+      size: new google.maps.Size(71, 71),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(17, 34),
+      scaledSize: new google.maps.Size(25, 25),
+    };
+
+    // Create a marker for each place.
+    var mark = new google.maps.Marker({
+      map,
+      icon,
+      title: place.name,
+      position: place.geometry.location,
+      optimized : false
+    })
+    // transfers clicks on these icons to new waypoint locations
+    mark.addListener("click", function() {
+      
+      markerOverride(0, this.position)
+
+      markersT.forEach((marker) => {
+        marker.setMap(null);
+      });
+      markersT = [];
+    });
+
+    markersT.push(mark);
+
+    if (place.geometry.viewport) {
+      // Only geocodes have viewport.
+      bounds.union(place.geometry.viewport);
+    } else {
+      bounds.extend(place.geometry.location);
+    }
+
+
+  });
+  map.fitBounds(bounds);
 }
 
 //Error screen for geolocation failure
@@ -76,6 +224,12 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
 // Replaces marker with new position
 function markerOverride (marker, pos) {
+  findRoute(marker, pos)
+
+}
+
+// assists markerOverride
+function mOverride (marker, pos) {
   window.markers[marker].position = pos
   window.markers[marker].setMap(null);
   window.markers[marker].setMap(map);
@@ -83,64 +237,191 @@ function markerOverride (marker, pos) {
 
 // Adds a new marker
 function markerAdd (pos) {
-  l = window.markers.length;
-  conv = b26(l);
-  ch = charFromInt(l);
-  name = ch.join('');
-
+  if (pos == null) return
+  var l = window.markers.length-1;
+  var ch = charFromInt(l);
+  var name = ch;
   window.markers.push(new google.maps.Marker({position : pos, label : name}));
-  window.markers[l].setMap(map);
+  window.markers[l+1].setMap(map);
 }
 
-// converts a number into an array in base 26
-function b26 (n) {
-  l = []
-  while (true) {
-    if (n == 0) {
-      break;
-    }
-    l.push(n % 26)
-    n = Math.floor(n / 26)
+// Interfaces between button and markerAdd
+function interfaceAdd () {
+  if (markers[0].position == null) return
+  markerAdd(markers[0].position)
+  markers[0].setMap(null)
+  markers[0] = new google.maps.Marker({position : null})
+
+  var mL = markers.length
+  if (mL < 3) return
+  // create a render for the previous path to save it
+  window.directionRenderers.push(new google.maps.DirectionsRenderer({
+    suppressMarkers : true
+  }))
+
+  var request = {
+    origin : window.markers[mL - 2].position,
+    destination : window.markers[mL - 1].position,
+    travelMode : window.travelMode
   }
-  l.reverse();
-  return l
+
+  var dRL = window.directionRenderers.length
+  window.directionRenderers[dRL-1].setMap(map)
+  window.directionsService.route(request, function(result, status) {
+    if (status == "OK") {
+      window.directionRenderers[dRL - 1].setDirections(result)
+    }
+  })
+
+  // create a span element and append it to container
+  mL = markers.length
+  var newelement = document.createElement("li");
+  newelement.className = "schedule";
+  newelement.innerHTML = "5:00 pm " + markers[mL-2].label + " - "+ " 9:00 pm " + markers[mL-1].label;
+  document.getElementById("placingTarget").appendChild(newelement);
+}
+
+// Erases all waypoints
+function erase () {
+  markersT.forEach((marker) => {
+    marker.setMap(null)
+  })
+  markersT = []
+  markers.forEach((marker => {
+    marker.setMap(null)
+  }))
+  markers = [new google.maps.Marker({position : null})]
+
+  var groundZero = document.getElementById("placingTarget")
+  while(groundZero.lastElementChild) {
+    groundZero.removeChild(groundZero.lastElementChild)
+  }
+
+  window.directionRenderers.forEach((directionRender) => {
+    directionRender.setMap(null)
+  })
+  window.directionRenderers = [new google.maps.DirectionsRenderer({
+    suppressMarkers : true
+  })];
+  window.directionRenderers[0].setMap(map);
 }
 
 // converts a list of numbers into a list of characters
 function charFromInt (l) {
-  li = []
-  for (n in l) {
-    li.push(String.fromCharCode(n+64))
-  }
-  return li
+  return String.fromCharCode(l+65)
 }
 
 // Determines fastest and alternate routes from two saved positions
-function findRoute() {
-  var request = {
-    origin : window.markers[1].position,
-    destination : window.markers[2].position,
-    travelMode : window.travelMode,
-    provideRouteAlternatives : true
+function findRoute(marker, pos) {
+  mL = markers.length
+  if (mL < 2) {
+    mOverride(marker, pos)
   }
-
+  var request = {
+    origin : window.markers[mL-1].position,
+    destination : pos,
+    travelMode : window.travelMode
+  }
   window.directionsService.route(request, function(result, status) {
     if (status == "OK") {
-      window.directionsRenderer.setDirections(result);
-    };
+      var stuff = parseDirectionData(result);
+      console.log(stuff)
+      setTravelDetails(stuff)
+      mOverride(marker, pos)
+      window.directionRenderers[0].setDirections(result);
+    } else {
+      window.alert("Invalid route"); // DASON ALERT
+    }
   });
 }
 
-// Button toggle
-function buttonToggle(buttonName) {
-  if (window.buttonDefaults.buttonName) {
-    window.buttonDefaults.buttonName = false;
-  } else {
-    window.buttonDefaults.buttonName = true;
-  };
+/* Fills in the info table for ya */
+function setTravelDetails(stuff) {
+  stuff.forEach(myFunction);
+  function myFunction(item, index) {
+    var b = index;
+    if (index > 7) {
+      b += 1  
+    }
+    document.getElementById(b + "Value").innerHTML = item;
+  }
 }
 
+/* Computes data from Direction Result object */
+function parseDirectionData(result) {
+  var data = result.routes[0].legs[0];
+  console.log(data);
+  var dist = data.distance.text;
+  d = dist.split(" ")
+  d = parseFloat(d[0])
+  var time = data.duration.text;
+
+  var co2;
+  var no;
+  var meth;
+  var co;
+  
+  // begin computation of complex stuffs
+  // Javascript swtich statement
+  switch(window.currentMode) {
+    case 0:
+      co2 = superrounder(d * 0.05) + " g"
+      no = "n/a"
+      meth = "n/a"
+      co = "n/a"
+      break;
+    case 1:
+      co2 = superrounder(d * 21) + " g"
+      no = "n/a"
+      meth = "n/a"
+      co = "n/a"
+      break;
+    case 2:
+      co2 = superrounder(d * 250) + " g"
+      no = superrounder(d * 0.012) + " g"
+      meth = superrounder(d * 0.063) + " g"
+      co = superrounder(d * 1.86) + " g"
+      break;
+    case 3:
+      co2 = superrounder(d * 822) + " g"
+      no = superrounder(d * 2) + " g"
+      meth = superrounder(d * 1) + " g"
+      co = superrounder(d * 6.11568) + " g"
+      break;
+    case 4:
+      co2 = superrounder(d * 160) + " g"
+      no = superrounder(d * 2) + " g"
+      meth = superrounder(d * 1) + " g"
+      co = "n/a"
+      break;
+    case 5:
+      co2 = superrounder(d * 115) + " g"
+      no = "n/a"
+      meth = "n/a"
+      co = "n/a"
+      break;
+    case 6:
+      co2 = superrounder(d * 960) + " g"
+      no = "n/a"
+      meth = "n/a"
+      co = "n/a"
+      break;
+    default:
+      co2 = no = meth = co = 0;
+  }
+  carbontax = parseFloat(co2.split(" ")[0])
+  carbontax /= 100000 * 2
+  carbontax = "$" + carbontax
+  return [dist, time, co2, no, meth, co, carbontax]
+}
+
+function superrounder(num) {
+  return Math.round((num + Number.EPSILON) * 100) / 100
+}
+
+
 // ------------------------------------------------------------ e ------------------------------------------------------------
+/*
 // Discovered bug. Impelemented searchnew variable to fix.
 // Tells my directions that a new search has been made, preventing directions toggle from dispalying leftover directions.
 var searchnew = 0;
@@ -187,11 +468,9 @@ function transport() {
   createDirections();
 }
 
-// ------------------------------------------------------------ e ------------------------------------------------------------
-
 
 // This array will count how many restaurant markers I've got on the map
-var markersArray = [];
+//var markersArray = [];
 
 // Search function is activated by user after inputing (or not inputing) keywords
 function search() {
@@ -251,6 +530,7 @@ function search() {
   // This fetch is formatted for search bar and its requests
   fetch(urlmain) // Call the fetch function passing the url of the API as a parameter
     .then(resp => {
+      console.log("Searching")
       return resp.json();
     }) // Transform the data into json
     .then(function(data) {
@@ -359,4 +639,4 @@ function createDirections() {
       }
     });
   }
-}
+}*/

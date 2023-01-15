@@ -29,31 +29,39 @@
   <body>
     <div id="grid-container">
       <div class="nav" id="nav"> 
-        <h1 id="title"><span id="fanci">ClearSky </span>Travelytics</h1>
+        <h1 id="title"><span onclick="testing()" id="fanci">ClearSky </span>Travelytics</h1>
         <img src="/images/earth3Trans.png" id="logo">
       </div>
 
       <div id="scheduleCon">
         <div class="bar" id="scheduleBar">
           <h1 class="subText">Schedule</h1>
+          
+        </div>
+        <div id="schedules">
+          <ul id = "placingTarget">
+          </ul>
         </div>
 
-        <div class="bottomButtons">
-          <div id="arrangeTrip">
-            <button type="button">Arrange Trip</button>
-          </div>
+        <div>
+          <span class="bottomButtons" type="button">Arrange Trip</span>
         </div>
+
+        <div>
+          <span onclick = 'erase()' class="bottomButtons" id="deleteSchedules" type="button">Delete Schedules</span>
+        </div>
+
       </div>
 
       <div id="mapInput">
         <div id="search-container">
-          <input
-            type="text"
-            placeholder="Search destination by keyword..."
-            id="searchbar"
-            name="search"
-          />
           <span class="material-symbols-outlined" onclick="search()" id="searchBut">search</span>
+          <input
+            id="pac-input"
+            class="controls"
+            type="text"
+            placeholder="Search for a destination"
+          />
         </div>
       </div>
 
@@ -64,26 +72,43 @@
 
       <div id="infoCon">
         <div class="bar" id="infoBar">
-          <h1 class="subText">Arrange Details</h1>
+          <h1 class="subText">Manage Travel</h1>
         </div>
         <div id="chooseMode">
+          <span>Select your travel option below:</span><br>
+            <span onclick="chooseMode(0)" class="material-symbols-outlined" id="m0">directions_walk</span>
+            <span onclick="chooseMode(1)" class="material-symbols-outlined" id="m1">directions_bike</span>
+            <span onclick="chooseMode(2)" class="material-symbols-outlined" id="m2">directions_car</span>
+            <span onclick="chooseMode(3)" class="material-symbols-outlined" id="m3">directions_bus</span>
+            <span onclick="chooseMode(4)" class="material-symbols-outlined" id="m4">train</span>
+            <span onclick="chooseMode(5)" class="material-symbols-outlined" id="m5">flight</span>
+            <span onclick="chooseMode(6)" class="material-symbols-outlined" id="m6">directions_boat</span></li>
+            <br/>
+            <img src="/transporticons/7.png" onclick="chooseMode(7)" class="funnyImage" id="m7">
+            <img src="/transporticons/9.png" onclick="chooseMode(9)" class="funnyImage" id="m9">
+            <img src="/transporticons/10.png" onclick="chooseMode(10)" class="funnyImage" id="m10">
+            <img src="/transporticons/11.png" onclick="chooseMode(11)" class="funnyImage" id="m11">
+            <img src="/transporticons/12.png" onclick="chooseMode(12)" class="funnyImage" id="m12">
+            <br>
           <ul id="travelOptionIcons">
-            <span onclick="chooseMode(0)" class="material-symbols-outlined">directions_walk</span></li>
-            <span onclick="chooseMode(1)" class="material-symbols-outlined">directions_bike</span></li>
-            <span onclick="chooseMode(2)" class="material-symbols-outlined">directions_car</span></li>
-            <span onclick="chooseMode(3)" class="material-symbols-outlined">directions_bus</span></li>
-            <span onclick="chooseMode(4)" class="material-symbols-outlined">train</span></li>
-            <span onclick="chooseMode(5)" class="material-symbols-outlined">flight</span></li>
-            <span onclick="chooseMode(6)" class="material-symbols-outlined">directions_boat</span></li>
+            <li class="typeSign">Travel Details</li>
+            <li>Time: <span id="0Value">n/a</span></li>
+            <li>Distance: <span id="1Value">n/a</span></li><br>
+            <li class="typeSign">Environmental Footprint</li>
+            <li>Carbon Dioxide Emissions: <span id="2Value">n/a</span></li>
+            <li>Carbon Monoxide Emissions: <span id="3Value">n/a</span></li>
+            <li>Nitrous Oxide Emissions: <span id="4Value">n/a</span></li>
+            <li>Methane Emissions: <span id="5Value">n/a</span></li>
+            <li>Hypothetical Carbon Tax: <span id="6Value">n/a</span></li><br>
+            <li class="typeSign">Health</li>
+            <li>Body Weight: <span id="ttt">n/a</span></li>
+            <li>Body Height: <span id="ttt">n/a</span></li>
+            <li>Biological Gender: <span id="tttt">n/a</span></li>
+            <li>Calories burned: <span id="7Value">n/a</span></li>
+            <li>Total Steps Taken: <span id="8Value">n/a</span></li>
           </ul>
+          <span onclick="interfaceAdd()" class="bottomButtons" type="button">Confirm Waypoint</span>
         </div>
-
-        <div class="bottomButtons">
-          <div id="addWaypoint">
-            <button type="button">Add Waypoint</button>
-          </div>
-        </div>
-
       </div>
       <!--
       <div class="search-container">
@@ -112,6 +137,10 @@
         <button type="submit" class="butdir" id ="b2">2</button>
         <button type="submit" class="butdir" id ="b3">3</button>
       </div>
+                  <li>Carbon Dioxide Emissions: <span id="cValue">n/a</span></li><br>
+            <li>Nitrous Oxide Emissions: <span id="cValue">n/a</span></li><br>
+            <li>Methane Emissions: <span id="cValue">n/a</span></li><br>
+            <li>Predicted Caloroie <span id="cValue">n/a</span></li><br>
       -->
     </div>
   </body>

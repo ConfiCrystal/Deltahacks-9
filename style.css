@@ -34,9 +34,19 @@ h1 {
 }
 
 #travelOptionIcons {
+  font-size: 0.9em;
+  display:block;
   list-style-type: none; /* Remove bullets */
   padding: 0; /* Remove padding */
   margin: 0; /* Remove margins */
+  white-space: pre-wrap;
+}
+
+@media only screen and (max-width: 900px) {
+  #travelOptionIcons {
+    display: inline-block;
+    font-size: calc(0.7vw + 10px);
+  }
 }
 
 #travelOptionIcons li {
@@ -65,8 +75,25 @@ h1 {
   margin-top: 10px
 }
 
+@media only screen and (max-width: 800px) {
+  #nav {
+    font-size: 0.6em;
+  }
+  #logo {
+    display: none;
+  }
+}
+
 #scheduleCon {
   grid-area: s;
+  border-right: 0.5vw solid var(--olivine);
+  position: relative;
+}
+
+#schedules {
+  background-color: var(--yellow-green);
+  padding: 1px 1px;
+  border-bottom: 0.6vh solid var(--olivine);
 }
 
 #scheduleBar {
@@ -84,7 +111,7 @@ h1 {
   font-family: "merryweather";
   float: center;
   text-align: center;
-  
+  font-size: calc(1vw + 12px);
 }
 
 #mapCon {
@@ -97,6 +124,7 @@ h1 {
 }
 
 #infoCon {
+  border-left: 0.5vw solid var(--olivine);
   grid-area: i;
 }
 
@@ -110,21 +138,48 @@ h1 {
   user-select: none; /* Standard syntax */
 }
 
+/* Travel Details Style*/
 #chooseMode {
+  color: ghostwhite;
   width: 100%;
   text-align: center;
   padding-top: 1vh;
   padding-bottom: 1vh;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  padding: 4px;
 }
 
-#travelOptionIcons span {
-  color: ghostwhite;
+.funnyImage {
+  width: 25px;
+}
+
+.typeSign{
+  color: var(--yellow-green)
+}
+
+#travelOptionIcons span:hover {
+  cursor: pointer;
 }
 
 .bottomButtons {
-  margin: 0;
-  left: 50%;
+  display: block;
   text-align: center;
+  padding: 10px 20px;
+  background-color: #2A628F;
+  color: ghostwhite;
+  display: block;
+  font-size: 16px;
+  border-radius: 4px;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.bottomButtons:hover {
+  cursor: pointer;
+  background-color: var(--blue);
 }
 
 /* GRID */
@@ -141,8 +196,8 @@ h1 {
 /* Smaller map for easier loading with my slow internet */
 .map {
   width: 100%;
-  height: 500px;
-  float: left;
+  height: 90vh;
+  max-height: 510px;
 }
 
 #search-container {
@@ -177,6 +232,50 @@ input[type="text"] {
 #searchBut:hover {
   cursor: pointer;
   color: royalblue;
+}
+
+@media only screen and (max-width: 900px) {
+  .map {
+    width: 100%;
+    height: 50vh;
+  }
+  
+  #search-container {
+    text-align: center;
+  }
+  
+  .material-symbols-outlined {
+    color: var(--yellow-green);
+  }
+  
+  input[type="text"] {
+    border-width: 0;
+    background-color: #fdfdfd;
+    margin: 0;
+    width: 80%;
+    font-size: calc(1vw + 12px);
+    padding: 6px;
+    float: left;
+  }
+  
+  #searchBut {
+    padding-top: 3px;
+    font-size: 1.3em;
+    width: 20%;
+  }
+
+    /* GRID */
+  #grid-container {
+    display: grid;
+    max-height: 100vh;
+    grid-template-columns: 100vw;
+    grid-template-areas:
+      "n"
+      "mi"
+      "m"
+      "i"
+      "s";
+  }
 }
 
 /*
