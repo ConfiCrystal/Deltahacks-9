@@ -145,10 +145,10 @@ h1 {
   text-align: center;
   padding-top: 1vh;
   padding-bottom: 1vh;
+  padding: 5px;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
-  padding: 4px;
 }
 
 .funnyImage {
@@ -186,7 +186,7 @@ h1 {
 #grid-container {
   display: grid;
   max-height: 100vh;
-  grid-template-columns: 25vw 50vw 25vw;
+  grid-template-columns: 22vw 50vw 28vw;
   grid-template-areas:
     "n n n"
     "s mi i"
@@ -276,6 +276,29 @@ input[type="text"] {
       "i"
       "s";
   }
+}
+
+/* SPECIAL text input fields */
+.set2 {
+  padding-left: 0;
+  padding-right: 0;
+  background-color: var(--light-borwn);
+  outline: none;
+  width: 4ch;
+  color: ghostwhite;
+}
+
+/* Removes arrows for number input */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 /*

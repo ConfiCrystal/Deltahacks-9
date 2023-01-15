@@ -92,20 +92,32 @@
             <br>
           <ul id="travelOptionIcons">
             <li class="typeSign">Travel Details</li>
-            <li>Time: <span id="0Value">n/a</span></li>
-            <li>Distance: <span id="1Value">n/a</span></li><br>
+            <li>Distance: <span id="0Value">n/a</span></li>
+            <li>Time: <span id="1Value">n/a</span></li><br>
             <li class="typeSign">Environmental Footprint</li>
             <li>Carbon Dioxide Emissions: <span id="2Value">n/a</span></li>
             <li>Carbon Monoxide Emissions: <span id="3Value">n/a</span></li>
             <li>Nitrous Oxide Emissions: <span id="4Value">n/a</span></li>
             <li>Methane Emissions: <span id="5Value">n/a</span></li>
-            <li>Hypothetical Carbon Tax: <span id="6Value">n/a</span></li><br>
+            <li>Hypothetical Carbon Tax:<br><span id="6Value">n/a</span></li><br>
             <li class="typeSign">Health</li>
-            <li>Body Weight: <span id="ttt">n/a</span></li>
-            <li>Body Height: <span id="ttt">n/a</span></li>
-            <li>Biological Gender: <span id="tttt">n/a</span></li>
+            <li>Body Weight (kg): <span id="bodw"><input
+              type="number"
+              class="set2"
+              id="sett1"
+              name="sett1"
+              oninput="setf(1)"
+            /></span></li><br>
+            <li>Body Height (m):  <span id="bodh"><input
+              type="number"
+              class="set2"
+              id="sett2"
+              name="sett2"
+              oninput="setf(2)"
+            /></span></li><br>
             <li>Calories burned: <span id="7Value">n/a</span></li>
             <li>Total Steps Taken: <span id="8Value">n/a</span></li>
+            <li>Mortality Rate: <span id="9Value">n/a</span></li>
           </ul>
           <span onclick="interfaceAdd()" class="bottomButtons" type="button">Confirm Waypoint</span>
         </div>

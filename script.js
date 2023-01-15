@@ -3,6 +3,12 @@ function testing() {
   console.log("you are testing.")
 }
 
+// STYLING FUNCTIONS - Purely for CSS support
+function setf(i) {
+  var x = document.getElementById("sett" + i);
+  x.value = x.value.slice(0, 3);
+}
+
 // Called when ALL the HTML has finished loading
 document.addEventListener('DOMContentLoaded', function () {
   window.currentMode = 0; // set current travel Mode to walking by default
@@ -16,6 +22,47 @@ markersT = []
 
 // Travel Mode Selection
 function chooseMode(nodeNum) {
+  switch (nodeNum) {
+    case 0:
+      convertTravel(nodeNum, "WALKING")
+      break;
+    case 1:
+      convertTravel(nodeNum, "BICYCLING")
+      break;
+    case 2:
+      convertTravel(nodeNum, "DRIVING") 
+      break;
+    case 3:
+      convertTravel(nodeNum, "Bus")
+      break;
+    case 4:
+      convertTravel(nodeNum, "Train") 
+      break;
+    case 5:
+      convertTravel(nodeNum, "Plane") 
+      break;
+    case 6:
+      convertTravel(nodeNum, "Plane") 
+      break;
+    case 7:
+      convertTravel(nodeNum, "Plane")
+      break;
+    case 9:
+      convertTravel(nodeNum, "Plane")
+      break;
+    case 10:
+      convertTravel(nodeNum, "BICYCLING")
+      break;
+    case 11:
+      convertTravel(nodeNum, "WALKING")
+      break;
+    case 12:
+      convertTravel(nodeNum,"Plane")
+      break;
+  }
+}
+
+function changeModeColour (nodeNum) {
   if (window.currentMode <= 6) {
     document.getElementById("m" + window.currentMode).style.color = "var(--yellow-green)";
   } else {
@@ -27,52 +74,65 @@ function chooseMode(nodeNum) {
     document.getElementById("m" + nodeNum).src = "/transporticons/" + nodeNum + "b.png";
   }
   window.currentMode = nodeNum; // this variable stores the current mode of travel
-
-  var state = false
-  switch (nodeNum) {
-    case 0:
-      if (convertTravel()) state = true
-      break;
-    case 1:
-      
-      break;
-    case 2:
-      
-      break;
-    case 3:
-      
-      break;
-    case 4:
-      
-      break;
-    case 5:
-      
-      break;
-    case 6:
-       
-      break;
-    case 7:
-      
-      break;
-    case 8:
-      
-      break;
-    case 9:
-      
-      break;
-    case 10:
-      
-      break;
-    case 11:
-      
-      break;
-  }
-  if (state == false) return
 }
 
 // converts to other travel modes
-function convertTravel (mode) {
-  
+function convertTravel (nodeNum, mode) {
+  if (mode == "Plane") {
+    window.travelMode = "Plane"
+  } else if (mode == "Bus" || mode == "Train") {
+    var mL = markers.length
+    if (markers[0].position == null || mL < 2) {
+      window.travelMode = "TRANSIT"
+      changeModeColour(nodeNum)
+      return
+    }
+    var request = {
+      origin : window.markers[mL-1].position,
+      destination : window.markers[0].position,
+      travelMode : "TRANSIT"
+    }
+    if (mode == "Bus") {
+      request.mode = ["BUS"]
+    } else {
+      request.mode = ["RAIL", "SUBWAY", "TRAIN", "TRAM"]
+    }
+    window.directionsService.route(request, function(result, status) {
+      if (status == "OK") {
+        var stuff = parseDirectionData(result);
+        setTravelDetails(stuff)
+        window.travelMode = "TRANSIT"
+        window.directionRenderers[0].setDirections(result);
+        changeModeColour(nodeNum)
+      } else {
+        window.alert("Invalid route"); // DASON ALERT
+      }
+    });
+  } else {
+    var mL = markers.length
+    if (markers[0].position == null || mL < 2) {
+      window.travelMode = mode
+      changeModeColour(nodeNum)
+      return
+    }
+    var request = {
+      origin : window.markers[mL-1].position,
+      destination : window.markers[0].position,
+      travelMode : mode
+    }
+    window.directionsService.route(request, function(result, status) {
+      if (status == "OK") {
+        var stuff = parseDirectionData(result);
+        setTravelDetails(stuff)
+        window.travelMode = mode
+        window.directionRenderers[0].setDirections(result);
+        changeModeColour(nodeNum)
+      } else {
+        window.alert("Invalid route"); // DASON ALERT
+      }
+    });
+
+  }
 }
 
 // Function myMap
@@ -133,7 +193,6 @@ function myMap() {
       searchBox.addListener("places_changed", () => {
         search()
       });
-
     }),
       // Increases geolocation accuracy
       {
@@ -146,6 +205,7 @@ function myMap() {
     handleLocationError(false, infoWindow, map.getCenter());
   }
 }
+
 
 // Search
 function search () {
@@ -360,6 +420,7 @@ function parseDirectionData(result) {
   var no;
   var meth;
   var co;
+  var mort = "?"
   
   // begin computation of complex stuffs
   // Javascript swtich statement
@@ -375,12 +436,14 @@ function parseDirectionData(result) {
       no = "n/a"
       meth = "n/a"
       co = "n/a"
+      mort = "0.00013%"
       break;
     case 2:
       co2 = superrounder(d * 250) + " g"
       no = superrounder(d * 0.012) + " g"
       meth = superrounder(d * 0.063) + " g"
       co = superrounder(d * 1.86) + " g"
+      mort = superrounder(d * 2.3496364e-8) + "%"
       break;
     case 3:
       co2 = superrounder(d * 822) + " g"
@@ -399,6 +462,7 @@ function parseDirectionData(result) {
       no = "n/a"
       meth = "n/a"
       co = "n/a"
+      mort = "8.33333333e-8%"
       break;
     case 6:
       co2 = superrounder(d * 960) + " g"
@@ -406,13 +470,46 @@ function parseDirectionData(result) {
       meth = "n/a"
       co = "n/a"
       break;
+    case 7:
+        co2 = superrounder(d * 69000) + " g"
+        no = superrounder(d * 823) + " g"
+        meth = superrounder(d * 5123) + " g"
+        co = superrounder(d * 323) + " g"
+        mort = "100%"
+        break;
+    case 9:
+        co2 = superrounder(d * 134.71689) + " g"
+        no = "n/a"
+        meth = superrounder(d * 0.0017962252) + " g"
+        co = "n/a"
+        mort = "99.92%"
+        break;
+    case 10:
+        co2 = superrounder(d * 141.112586307 * 1.05 / 144) + " g"
+        no = "n/a"
+        meth = superrounder(d * 0.16) + " g"
+        co = "n/a"
+        mort = "0.00139%"
+        break;
+    case 11:
+        co2 = superrounder(d * 0.1) + " g"
+        no = "n/a"
+        meth = "n/a"
+        co = "n/a"
+        break;
+    case 12:
+        co2 = superrounder(d * 101) + " g"
+        no = superrounder(d * 93) + " g"
+        meth = "n/a"
+        co = "n/a"
+        break;
     default:
-      co2 = no = meth = co = 0;
+        co2 = no = meth = co = 0;
   }
   carbontax = parseFloat(co2.split(" ")[0])
-  carbontax /= 100000 * 2
+  carbontax /= 100000 * 2 * 2.5
   carbontax = "$" + carbontax
-  return [dist, time, co2, no, meth, co, carbontax]
+  return [dist, time, co2, no, meth, co, carbontax, mort]
 }
 
 function superrounder(num) {
