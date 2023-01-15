@@ -27,6 +27,8 @@ function conjurePhrase(num) {
   }
 }
 
+window.planeRide = true;
+
 // STYLING FUNCTIONS - Purely for CSS support
 function setf(i) {
   var x = document.getElementById("sett" + i);
@@ -809,11 +811,14 @@ function parseDirectionData(result) {
   carbontax /= 100000 * 2 * 2.5
   carbontax = "$" + carbontax
   temp = [dist, time, co2, no, meth, co, carbontax, BMR, cal, fat, steps, mort]
-  for (let i = 0; i < temp.length; i++) {
-    entry = temp[i]
-    if (isNaN(entry)) {
-      temp[i] = "n/a"
+  if (window.travelMode == "Plane" && window.planeRide == true) {
+    for (let i = 0; i < temp.length; i++) {
+        entry = temp[i]
+        if (isNaN(entry)) {
+        temp[i] = "n/a"
+        }
     }
+    window.planeRide = false
   }
   return temp
 }
