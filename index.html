@@ -101,23 +101,31 @@
             <li>Methane Emissions: <span id="5Value">n/a</span></li>
             <li>Hypothetical Carbon Tax:<br><span id="6Value">n/a</span></li><br>
             <li class="typeSign">Health</li>
-            <li>Body Weight (kg): <span id="bodw"><input
+            <li>Weight (kg): <span id="bodw"><input
               type="number"
               class="set2"
               id="sett1"
               name="sett1"
               oninput="setf(1)"
-            /></span></li><br>
-            <li>Body Height (m):  <span id="bodh"><input
+            /></span>  Age: <span id="boda"><input
               type="number"
               class="set2"
               id="sett2"
               name="sett2"
               oninput="setf(2)"
             /></span></li><br>
-            <li>Calories burned: <span id="7Value">n/a</span></li>
-            <li>Total Steps Taken: <span id="8Value">n/a</span></li>
-            <li>Mortality Rate: <span id="9Value">n/a</span></li>
+            <li>Height (cm): <span id="bodh"><input
+              type="number"
+              class="set2"
+              id="sett3"
+              name="sett3"
+              oninput="setf(3)"
+            /></span>  Gender: <button onclick="swapG(0)" class="Gbut" id="tmaleG">M</button>  <button onclick="swapG(1)" class="Gbut" id="femaleG">F</button></li><br>
+            <li>BMR: <span id="7Value">n/a</span></li>
+            <li>Max calories burned (kcal): <span id="8Value">n/a</span></li>
+            <li>Max fat burned (kg): <span id="9Value">n/a</span></li>
+            <li>Total Steps: <span id="10Value">n/a</span></li>
+            <li>Mortality Rate: <span id="11Value">n/a</span></li>
           </ul>
           <span onclick="interfaceAdd()" class="bottomButtons" type="button">Confirm Waypoint</span>
         </div>

@@ -9,11 +9,29 @@ function setf(i) {
   x.value = x.value.slice(0, 3);
 }
 
+function swapG(b) {
+  switch(b) {
+    case 0:
+      console.log(0);
+      document.getElementById("tmaleG").style.color = "var(--blue)"
+      document.getElementById("femaleG").style.color = "ghostwhite"
+      window.Gender = true
+      break;
+    default:
+      console.log(1);
+      document.getElementById("femaleG").style.color = "var(--blue)"
+      document.getElementById("tmaleG").style.color = "ghostwhite"
+      window.Gender = false
+  }
+}
+
 // Called when ALL the HTML has finished loading
 document.addEventListener('DOMContentLoaded', function () {
   window.currentMode = 0; // set current travel Mode to walking by default
   // Call the function to give node0 special color
   chooseMode(0)
+  // Set default gender to male
+  swapG(0)
 });
 
 // API key
@@ -73,66 +91,6 @@ function changeModeColour (nodeNum) {
   } else {
     document.getElementById("m" + nodeNum).src = "/transporticons/" + nodeNum + "b.png";
   }
-  window.currentMode = nodeNum; // this variable stores the current mode of travel
-}
-
-// converts to other travel modes
-function convertTravel (nodeNum, mode) {
-  if (mode == "Plane") {
-    window.travelMode = "Plane"
-  } else if (mode == "Bus" || mode == "Train") {
-    var mL = markers.length
-    if (markers[0].position == null || mL < 2) {
-      window.travelMode = "TRANSIT"
-      changeModeColour(nodeNum)
-      return
-    }
-    var request = {
-      origin : window.markers[mL-1].position,
-      destination : window.markers[0].position,
-      travelMode : "TRANSIT"
-    }
-    if (mode == "Bus") {
-      request.mode = ["BUS"]
-    } else {
-      request.mode = ["RAIL", "SUBWAY", "TRAIN", "TRAM"]
-    }
-    window.directionsService.route(request, function(result, status) {
-      if (status == "OK") {
-        var stuff = parseDirectionData(result);
-        setTravelDetails(stuff)
-        window.travelMode = "TRANSIT"
-        window.directionRenderers[0].setDirections(result);
-        changeModeColour(nodeNum)
-      } else {
-        window.alert("Invalid route"); // DASON ALERT
-      }
-    });
-  } else {
-    var mL = markers.length
-    if (markers[0].position == null || mL < 2) {
-      window.travelMode = mode
-      changeModeColour(nodeNum)
-      return
-    }
-    var request = {
-      origin : window.markers[mL-1].position,
-      destination : window.markers[0].position,
-      travelMode : mode
-    }
-    window.directionsService.route(request, function(result, status) {
-      if (status == "OK") {
-        var stuff = parseDirectionData(result);
-        setTravelDetails(stuff)
-        window.travelMode = mode
-        window.directionRenderers[0].setDirections(result);
-        changeModeColour(nodeNum)
-      } else {
-        window.alert("Invalid route"); // DASON ALERT
-      }
-    });
-
-  }
 }
 
 // Function myMap
@@ -143,9 +101,9 @@ function myMap() {
   // General map
   map = new google.maps.Map(document.getElementById("googleMap"));
   infoWindow = new google.maps.InfoWindow();
-
   // Variables
   window.travelMode = 'WALKING';
+  window.planeLines = []
 
   // Objects
   geocoder = new google.maps.Geocoder()
@@ -193,6 +151,9 @@ function myMap() {
       searchBox.addListener("places_changed", () => {
         search()
       });
+
+      console.log(getDistance({lat : 10, lng : 10}, {lat : 0, lng : 0}))
+
     }),
       // Increases geolocation accuracy
       {
@@ -206,6 +167,106 @@ function myMap() {
   }
 }
 
+// converts to other travel modes
+function convertTravel (nodeNum, mode) {
+  if (mode == "Plane") {
+    changeModeColour(nodeNum)
+    window.travelMode = "Plane"
+    window.currentMode = nodeNum;
+
+    if (markers[0] == null) return
+    window.directionRenderers[0].setMap(null)
+    window.directionRenderers[0] = new google.maps.DirectionsRenderer({
+      suppressMarkers : true
+    })
+    window.directionRenderers[0].setMap(map)
+
+    window.planeLine = new google.maps.Polyline({
+      path : [window.markers[window.markers.length-1].position, window.markers[0].position]
+    })
+    planeLine.setMap(map)
+  } else if (mode == "Bus" || mode == "Train") {
+    var mL = markers.length
+    if (markers[0].position == null || mL < 2) {
+      changeModeColour(nodeNum)
+      window.travelMode = "TRANSIT"
+      window.currentMode = nodeNum; // this variable stores the current mode of travel
+      return
+    }
+    var request = {
+      origin : window.markers[mL-1].position,
+      destination : window.markers[0].position,
+      travelMode : "TRANSIT"
+    }
+    if (mode == "Bus") {
+      request.transitOptions = {modes : ['BUS']}
+    } else {
+      request.transitOptions = {modes :["RAIL", "SUBWAY", "TRAIN", "TRAM"]}
+    }
+    window.directionsService.route(request, function(result, status) {
+      if (status == "OK") {
+        changeModeColour(nodeNum)
+        window.travelMode = "TRANSIT"
+        window.currentMode = nodeNum; // this variable stores the current mode of travel
+        var stuff = parseDirectionData(result);
+        setTravelDetails(stuff)
+        window.directionRenderers[0].setDirections(result);
+      } else {
+        window.alert("Invalid route"); // ALERT
+      }
+    });
+  } else {
+    var mL = window.markers.length
+    if (markers[0].position == null || mL < 2) {
+      changeModeColour(nodeNum)
+      window.travelMode = mode
+      window.currentMode = nodeNum; // this variable stores the current mode of travel
+      return
+    }
+    var request = {
+      origin : window.markers[mL-1].position,
+      destination : window.markers[0].position,
+      travelMode : mode
+    }
+    if (mode == "Bus") {
+      request.transitOptions = {modes : ['BUS']}
+    } else {
+      request.transitOptions = {modes :["RAIL", "SUBWAY", "TRAIN", "TRAM"]}
+    }
+    window.directionsService.route(request, function(result, status) {
+      if (status == "OK") {
+        changeModeColour(nodeNum)
+        window.travelMode = mode
+        window.currentMode = nodeNum; // this variable stores the current mode of travel
+        var stuff = parseDirectionData(result);
+        setTravelDetails(stuff)
+        window.directionRenderers[0].setDirections(result);
+      } else {
+        window.alert("Invalid route"); // DASON ALERT
+      }
+    });
+
+  }
+  if (travelMode != "Plane") {
+    planeLine.setMap(null)
+  }
+}
+
+var rad = function(x) {
+  return x * Math.PI / 180;
+};
+
+var getDistance = function(p1, p2) {
+  var R = 6378137; // Earth’s mean radius in meter
+  var dLat = rad(p2.lat - p1.lat);
+  var dLong = rad(p2.lng - p1.lng);
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
+    Math.sin(dLong / 2) * Math.sin(dLong / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c;
+  return d; // returns the distance in meter
+};
 
 // Search
 function search () {
@@ -311,6 +372,16 @@ function interfaceAdd () {
   markerAdd(markers[0].position)
   markers[0].setMap(null)
   markers[0] = new google.maps.Marker({position : null})
+  
+  if (travelMode == "Plane") {
+    var mL = markers.length
+    planeLines.push(new google.maps.Polyline({
+      path : [window.markers[mL - 2].position, window.markers[mL - 1].position]
+    }))
+    planeLines[planeLines.length-1].setMap(map)
+    planeLine.setMap(null)
+    return
+  }
 
   var mL = markers.length
   if (mL < 3) return
@@ -319,10 +390,16 @@ function interfaceAdd () {
     suppressMarkers : true
   }))
 
+
   var request = {
     origin : window.markers[mL - 2].position,
     destination : window.markers[mL - 1].position,
     travelMode : window.travelMode
+  }
+  if (travelMode == "Bus") {
+    request.transitOptions = {modes : ['BUS']}
+  } else if (travelMode == "Train") {
+    request.transitOptions = {modes :["RAIL", "SUBWAY", "TRAIN", "TRAM"]}
   }
 
   var dRL = window.directionRenderers.length
@@ -350,6 +427,11 @@ function erase () {
   markers.forEach((marker => {
     marker.setMap(null)
   }))
+
+  planeLines.forEach((line) => {
+    line.setMap(null)
+  })
+  planeLines = []
   markers = [new google.maps.Marker({position : null})]
 
   var groundZero = document.getElementById("placingTarget")
@@ -364,6 +446,8 @@ function erase () {
     suppressMarkers : true
   })];
   window.directionRenderers[0].setMap(map);
+
+  planeLine.setMap(null)
 }
 
 // converts a list of numbers into a list of characters
@@ -373,6 +457,35 @@ function charFromInt (l) {
 
 // Determines fastest and alternate routes from two saved positions
 function findRoute(marker, pos) {
+  if (travelMode == "Plane") {
+    window.directionRenderers[0].setMap(null)
+    window.directionRenderers[0] = new google.maps.DirectionsRenderer({
+      suppressMarkers : true
+    })
+    window.directionRenderers[0].setMap(map)
+
+    if (window.planeLine != null) {
+      window.planeLine.setMap(null)
+    }
+
+    if (makers.length < 2) return
+
+    window.planeLine = new google.maps.Polyline({
+      path : [window.markers[window.markers.length-1].position, pos]
+    })
+    planeLine.setMap(map)
+    mOverride(marker, pos)
+
+   console.log((markers[markers.length-1].position, pos))
+    result = {
+      routes : [{legs : [{distance : { text : getDistance(markers[markers.length-1].position, pos).toString()}, duration : { text : (getDistance(markers[markers.length-1].position, pos) * 9/2000).toString()}}]}]
+    }
+    var stuff = parseDirectionData(result);
+    console.log(stuff)
+    setTravelDetails(stuff)
+    return true
+  }
+  
   mL = markers.length
   if (mL < 2) {
     mOverride(marker, pos)
@@ -381,6 +494,11 @@ function findRoute(marker, pos) {
     origin : window.markers[mL-1].position,
     destination : pos,
     travelMode : window.travelMode
+  }
+  if (travelMode == "Bus") {
+    request.transitOptions = {modes : ['BUS']}
+  } else if (travelMode == "Train") {
+    request.transitOptions = {modes :["RAIL", "SUBWAY", "TRAIN", "TRAM"]}
   }
   window.directionsService.route(request, function(result, status) {
     if (status == "OK") {
@@ -399,16 +517,13 @@ function findRoute(marker, pos) {
 function setTravelDetails(stuff) {
   stuff.forEach(myFunction);
   function myFunction(item, index) {
-    var b = index;
-    if (index > 7) {
-      b += 1  
-    }
-    document.getElementById(b + "Value").innerHTML = item;
+    document.getElementById(index + "Value").innerHTML = item;
   }
 }
 
 /* Computes data from Direction Result object */
 function parseDirectionData(result) {
+  console.log(result)
   var data = result.routes[0].legs[0];
   console.log(data);
   var dist = data.distance.text;
@@ -416,11 +531,52 @@ function parseDirectionData(result) {
   d = parseFloat(d[0])
   var time = data.duration.text;
 
+  // environmental variables
   var co2;
   var no;
   var meth;
   var co;
-  var mort = "?"
+
+  // health variables
+  var weight = parseInt(document.getElementById("sett1").value.trim());
+  var age = parseInt(document.getElementById("sett2").value.trim());
+  var height = parseInt(document.getElementById("sett3").value.trim());
+
+  var fat = "n/a";
+  var mort = "?";
+  var steps = "n/a";
+
+  var BMR = 0
+  if (window.Gender == true) {
+    // 88.362 + (13.397 x weight in kg) + (4.799 x height in cm) – (5.677 x age in years) 
+    BMR = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+  } else {
+    // 447.593 + (9.247 x weight in kg) + (3.098 x height in cm) – (4.330 x age in years)
+    BMR = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+  }
+
+  var cal = "n/a";
+  if (window.Gender == true) {
+    //Calories Burned = [(Age * 0.2017) + (Weight * 0.09036) + (Heart Rate * 0.6309) .sd-- 55.0969] * Time / 4.184.
+    cal = ((age * 0.2017) + (weight * 0.09036) + ((220-age) * 0.6309) - 55.0969) * (2.41666666667 * d) / 4.184;
+  } else {
+    //Calories Burned = [(Age * 0.074) -- (Weight * 0.05741) + (Heart Rate * 0.4472) -- 20.4022] * Time / 4.184.
+    cal = ((age * 0.074) - (weight * 0.05741) + ((220-age) * 0.4472) - 20.4022) * (2.75 * d) / 4.184;
+  }
+
+  fat = cal/7700
+
+  // round eveyrthing nice
+
+  if (isNaN(BMR)) {
+    BMR = "n/a";
+    cal = "n/a";
+    fat = "n/a";
+  } else {
+    BMR = superrounder(BMR)
+    cal = superrounder(cal)
+    fat = superrounder(fat)
+  }
   
   // begin computation of complex stuffs
   // Javascript swtich statement
@@ -430,6 +586,7 @@ function parseDirectionData(result) {
       no = "n/a"
       meth = "n/a"
       co = "n/a"
+      steps = superrounder(1408 * d)
       break;
     case 1:
       co2 = superrounder(d * 21) + " g"
@@ -509,7 +666,7 @@ function parseDirectionData(result) {
   carbontax = parseFloat(co2.split(" ")[0])
   carbontax /= 100000 * 2 * 2.5
   carbontax = "$" + carbontax
-  return [dist, time, co2, no, meth, co, carbontax, mort]
+  return [dist, time, co2, no, meth, co, carbontax, BMR, cal, fat, steps, mort]
 }
 
 function superrounder(num) {

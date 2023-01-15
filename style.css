@@ -119,7 +119,7 @@ h1 {
 }
 
 #mapInput {
-  background-color: var(--blue);
+  background-color: var(--olivine);
   grid-area: mi;
 }
 
@@ -193,7 +193,6 @@ h1 {
     "s m i";
 }
 
-/* Smaller map for easier loading with my slow internet */
 .map {
   width: 100%;
   height: 90vh;
@@ -264,6 +263,18 @@ input[type="text"] {
     width: 20%;
   }
 
+  #chooseMode {
+    border: 0;
+  }
+
+  #infoCon {
+    border: 0;
+  }
+
+  #chooseCon {
+    border: 0;
+  }
+
     /* GRID */
   #grid-container {
     display: grid;
@@ -299,6 +310,18 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* Gender buttons */
+.Gbut {
+  font-weight: bold;
+  background-color: var(--earth-brown);
+  color: ghostwhite;
+  border: 1px solid ghostwhite;
+}
+
+.Gbut:hover {
+  cursor: pointer;
 }
 
 /*
