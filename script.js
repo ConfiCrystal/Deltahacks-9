@@ -9,16 +9,24 @@ function setf(i) {
   x.value = x.value.slice(0, 3);
 }
 
+sValues = []
+for (let i = 0; i < 12; i++) {
+  sValues.push(0)
+}
+temp = []
+for (let i = 0; i < 13; i++) {
+  temp.push(0)
+}
+
+
 function swapG(b) {
   switch(b) {
     case 0:
-      console.log(0);
       document.getElementById("tmaleG").style.color = "var(--blue)"
       document.getElementById("femaleG").style.color = "ghostwhite"
       window.Gender = true
       break;
     default:
-      console.log(1);
       document.getElementById("femaleG").style.color = "var(--blue)"
       document.getElementById("tmaleG").style.color = "ghostwhite"
       window.Gender = false
@@ -106,6 +114,7 @@ function myMap() {
   window.planeLines = []
 
   // Objects
+  window.planeLine = new google.maps.Polyline({path : [{lat:0,lng:0}, {lat:0,lng:0}]})
   geocoder = new google.maps.Geocoder()
   window.directionsService = new google.maps.DirectionsService();
   window.directionRenderers = [new google.maps.DirectionsRenderer({
@@ -144,15 +153,13 @@ function myMap() {
 
       // Search box init
       var input = document.getElementById('pac-input')
-      var searchBox = new google.maps.places.SearchBox(input)
+      window.searchBox = new google.maps.places.SearchBox(input)
 
       // Listen for the event fired when the user selects a prediction and retrieve
       // more details for that place.
       searchBox.addListener("places_changed", () => {
         search()
       });
-
-      console.log(getDistance({lat : 10, lng : 10}, {lat : 0, lng : 0}))
 
     }),
       // Increases geolocation accuracy
@@ -169,6 +176,12 @@ function myMap() {
 
 // converts to other travel modes
 function convertTravel (nodeNum, mode) {
+  
+  if (mode != "Plane") {
+    planeLine.setMap(null)
+    planeLine = new google.maps.Polyline({path : [{lat:0,lng:0}, {lat:0,lng:0}]})
+    planeLine.setMap(map)
+  }
   if (mode == "Plane") {
     changeModeColour(nodeNum)
     window.travelMode = "Plane"
@@ -181,6 +194,7 @@ function convertTravel (nodeNum, mode) {
     })
     window.directionRenderers[0].setMap(map)
 
+    window.planeLine.setMap(null)
     window.planeLine = new google.maps.Polyline({
       path : [window.markers[window.markers.length-1].position, window.markers[0].position]
     })
@@ -246,9 +260,6 @@ function convertTravel (nodeNum, mode) {
       }
     });
 
-  }
-  if (travelMode != "Plane") {
-    planeLine.setMap(null)
   }
 }
 
@@ -372,6 +383,34 @@ function interfaceAdd () {
   markerAdd(markers[0].position)
   markers[0].setMap(null)
   markers[0] = new google.maps.Marker({position : null})
+
+  //[dist, time, co2, no, meth, co, carbontax, BMR, cal, fat, steps, mort]
+  temptemp = []
+  for (let i = 0; i < 12; i++) {
+    ind = i
+    if (i >= 7) {
+      ind ++
+    }
+    temptemp[i] = temp[ind]
+    if (temp[ind].slice(0,3) == "n/a") {
+      temptemp[i] = ""
+    }
+  }
+/*
+  sValues[0] += parseFloat(temptemp[0].slice(0,temptemp[0].length-3))
+  sValues[1] += parseFloat(temptemp[1].slice(0,temptemp[0].length-5))
+  sValues[2] += parseFloat(temptemp[2].slice(0,temptemp[0].length-2))
+  sValues[3] += parseFloat(temptemp[3].slice(0,temptemp[0].length-2))
+  sValues[4] += parseFloat(temptemp[4].slice(0,temptemp[0].length-2))
+  sValues[5] += parseFloat(temptemp[5].slice(0,temptemp[0].length-2))
+  sValues[6] += parseFloat(temptemp[6].slice(1)
+  sValues[8] += parseFloat(temptemp[8].slice(temptemp[0].length-2))
+  sValues[9] += parseFloat(temptemp[9].slice(temptemp[0].length-2))
+  sValues[10] += parseFloat(temptemp[10].slice(temptemp[0].length-2))
+  sValues[11] += parseFloat(temptemp[11].slice(temptemp[0].length-2))
+*/
+  
+  console.log(sValues)
   
   if (travelMode == "Plane") {
     var mL = markers.length
@@ -468,7 +507,7 @@ function findRoute(marker, pos) {
       window.planeLine.setMap(null)
     }
 
-    if (makers.length < 2) return
+    if (markers.length < 2) return
 
     window.planeLine = new google.maps.Polyline({
       path : [window.markers[window.markers.length-1].position, pos]
@@ -476,9 +515,8 @@ function findRoute(marker, pos) {
     planeLine.setMap(map)
     mOverride(marker, pos)
 
-   console.log((markers[markers.length-1].position, pos))
-    result = {
-      routes : [{legs : [{distance : { text : getDistance(markers[markers.length-1].position, pos).toString()}, duration : { text : (getDistance(markers[markers.length-1].position, pos) * 9/2000).toString()}}]}]
+    result = { 
+      routes : [{legs : [{distance : { text : getDistance(window.markers[window.markers.length-1].position, {lat : pos.lat(), lng : pos.lng()}).toString()}, duration : { text : (getDistance(markers[markers.length-1].position,  {lat : pos.lat(), lng : pos.lng()}) * 9/2000).toString()}}]}]
     }
     var stuff = parseDirectionData(result);
     console.log(stuff)
@@ -523,7 +561,6 @@ function setTravelDetails(stuff) {
 
 /* Computes data from Direction Result object */
 function parseDirectionData(result) {
-  console.log(result)
   var data = result.routes[0].legs[0];
   console.log(data);
   var dist = data.distance.text;
@@ -545,37 +582,49 @@ function parseDirectionData(result) {
   var fat = "n/a";
   var mort = "?";
   var steps = "n/a";
-
-  var BMR = 0
-  if (window.Gender == true) {
-    // 88.362 + (13.397 x weight in kg) + (4.799 x height in cm) – (5.677 x age in years) 
-    BMR = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
-  } else {
-    // 447.593 + (9.247 x weight in kg) + (3.098 x height in cm) – (4.330 x age in years)
-    BMR = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
-  }
-
   var cal = "n/a";
-  if (window.Gender == true) {
-    //Calories Burned = [(Age * 0.2017) + (Weight * 0.09036) + (Heart Rate * 0.6309) .sd-- 55.0969] * Time / 4.184.
-    cal = ((age * 0.2017) + (weight * 0.09036) + ((220-age) * 0.6309) - 55.0969) * (2.41666666667 * d) / 4.184;
-  } else {
-    //Calories Burned = [(Age * 0.074) -- (Weight * 0.05741) + (Heart Rate * 0.4472) -- 20.4022] * Time / 4.184.
-    cal = ((age * 0.074) - (weight * 0.05741) + ((220-age) * 0.4472) - 20.4022) * (2.75 * d) / 4.184;
-  }
+  var BMR = "n/a"
 
-  fat = cal/7700
+  if (window.currentMode == 0 || window.currentMode == 1 || window.currentMode == 10 || window.currentMode == 11) {
+    if (window.Gender == true) {
+      // 88.362 + (13.397 x weight in kg) + (4.799 x height in cm) – (5.677 x age in years) 
+      BMR = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+      // 447.593 + (9.247 x weight in kg) + (3.098 x height in cm) – (4.330 x age in years)
+      BMR = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
 
-  // round eveyrthing nice
+    if (window.Gender == true) {
+      //Calories Burned = [(Age * 0.2017) + (Weight * 0.09036) + (Heart Rate * 0.6309) .sd-- 55.0969] * Time / 4.184.
+      cal = ((age * 0.2017) + (weight * 0.09036) + ((220-age) * 0.6309) - 55.0969) * (2.41666666667 * d) / 4.184;
+    } else {
+      //Calories Burned = [(Age * 0.074) -- (Weight * 0.05741) + (Heart Rate * 0.4472) -- 20.4022] * Time / 4.184.
+      cal = ((age * 0.074) - (weight * 0.05741) + ((220-age) * 0.4472) - 20.4022) * (2.75 * d) / 4.184;
+    }
 
-  if (isNaN(BMR)) {
-    BMR = "n/a";
-    cal = "n/a";
-    fat = "n/a";
-  } else {
-    BMR = superrounder(BMR)
-    cal = superrounder(cal)
-    fat = superrounder(fat)
+    fat = cal/7700
+
+    // round eveyrthing nice
+    if (isNaN(BMR)) {
+      BMR = "n/a";
+      cal = "n/a";
+      fat = "n/a";
+    } else {
+      if (window.currentMode == 1) {
+        cal *= 240/149
+        fat *= 240/149
+      } else if (window.currentMode == 10) {
+        cal = 274 / 19.3121 * d
+        fat = cal/7700
+      } else if (window.currentMode == 11) {
+        cal *= 6/5
+        fat *= 6/5
+      }
+      BMR = superrounder(BMR)
+      cal = superrounder(cal)
+      fat = superrounder(fat)
+      
+    }
   }
   
   // begin computation of complex stuffs
@@ -603,10 +652,10 @@ function parseDirectionData(result) {
       mort = superrounder(d * 2.3496364e-8) + "%"
       break;
     case 3:
-      co2 = superrounder(d * 822) + " g"
-      no = superrounder(d * 2) + " g"
-      meth = superrounder(d * 1) + " g"
-      co = superrounder(d * 6.11568) + " g"
+      co2 = superrounder(d * 822 / 4) + " g"
+      no = superrounder(d * 2 / 4) + " g"
+      meth = superrounder(d * 1 / 4) + " g"
+      co = superrounder(d * 6.11568 / 4) + " g"
       break;
     case 4:
       co2 = superrounder(d * 160) + " g"
@@ -666,231 +715,10 @@ function parseDirectionData(result) {
   carbontax = parseFloat(co2.split(" ")[0])
   carbontax /= 100000 * 2 * 2.5
   carbontax = "$" + carbontax
-  return [dist, time, co2, no, meth, co, carbontax, BMR, cal, fat, steps, mort]
+  temp = [dist, time, co2, no, meth, co, carbontax, BMR, cal, fat, steps, mort]
+  return temp
 }
 
 function superrounder(num) {
   return Math.round((num + Number.EPSILON) * 100) / 100
 }
-
-
-// ------------------------------------------------------------ e ------------------------------------------------------------
-/*
-// Discovered bug. Impelemented searchnew variable to fix.
-// Tells my directions that a new search has been made, preventing directions toggle from dispalying leftover directions.
-var searchnew = 0;
-
-// As you can see, I use an unhealthy amount of universal variables. Forgive me.
-window.distancetoggle = 1;
-function distance() {
-  if (window.distancetoggle == 0) {
-    document.getElementById("tb1").style.backgroundColor = "indianred";
-    window.distancetoggle = 1;
-  } else {
-    document.getElementById("tb1").style.backgroundColor = "seagreen";
-    window.distancetoggle = 0;
-    document.getElementById("tb2").style.backgroundColor = "indianred";
-    window.ratingtoggle = 1;
-  }
-}
-
-// These toggles are for the three big buttons you see. They code for the on/off switch effect.
-window.ratingtoggle = 1;
-function rating() {
-  if (window.ratingtoggle == 0) {
-    document.getElementById("tb2").style.backgroundColor = "indianred";
-    window.ratingtoggle = 1;
-  } else {
-    document.getElementById("tb2").style.backgroundColor = "seagreen";
-    window.ratingtoggle = 0;
-    document.getElementById("tb1").style.backgroundColor = "indianred";
-    window.distancetoggle = 1;
-  }
-}
-
-// transportoggle will be used later in making directions
-window.transporttoggle = 1;
-function transport() {
-  if (window.transporttoggle == 0) {
-    document.getElementById("tb3").style.backgroundColor = "indianred";
-    window.transporttoggle = 1;
-  } else {
-    document.getElementById("tb3").style.backgroundColor = "seagreen";
-    window.transporttoggle = 0;
-  }
-  // Very important, since it allows directions to update each time user changes toggle.
-  createDirections();
-}
-
-
-// This array will count how many restaurant markers I've got on the map
-//var markersArray = [];
-
-// Search function is activated by user after inputing (or not inputing) keywords
-function search() {
-  searchnew = 0;
-  // These don't code for directions, they clear previous directions by shifting the center back to user's current location.
-  // Unorthodox, but it works.
-  var request = {
-    origin: window.pos,
-    destination: window.pos,
-    travelMode: "DRIVING"
-  };
-  window.directionsService.route(request, function(result, status) {
-    if (status == "OK") {
-      window.directionsRenderer.setDirections(result);
-    }
-  });
-
-  // Clears all markers. I put the markers into an array.
-  for (var i = 0; i < markersArray.length; i++) {
-    markersArray[i].setMap(null);
-  }
-  markersArray.length = 0;
-
-  // Do you like making brothy soup? You throw a bunch of edibles into the pot and hope it works.
-  // That is exactly what I am doing here with this fetch URL. First, I gather bits of information.
-  var urlhead =
-    "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-
-  // Add user's current location to pot
-  var urllocation = JSON.stringify(window.pos)
-    .replace('{"lat":', "")
-    .replace("}", "")
-    .replace('"lng":', "")
-    .trim();
-  console.log("Current location is: " + urllocation);
-
-  // Add any searchbar input to pot
-  let input = document
-    .getElementById("searchbar")
-    .value.toLowerCase()
-    .trim()
-    .split(" ")
-    .join("%20");
-
-  // Add user distance toggle to pot
-  if (window.distancetoggle == 0) {
-    var urltail = "&type=restaurant&rankby=distance&keyword=";
-  } else {
-    var urltail = "&radius=3000&type=restaurant&keyword=";
-  }
-
-
-  // Stir it all together into urlmain. This is the final product URL.
-  var urlmain = urlhead + urllocation + urltail + input + urlkey;
-  console.log("JSON sample: " + urlmain);
-
-  // This fetch is formatted for search bar and its requests
-  fetch(urlmain) // Call the fetch function passing the url of the API as a parameter
-    .then(resp => {
-      console.log("Searching")
-      return resp.json();
-    }) // Transform the data into json
-    .then(function(data) {
-      // A jumble of if statements to check if distance or rating has been selected.
-      if (window.distancetoggle == 0) {
-        // if distance is toggled, only 3 results are shown
-        window.length = 3;
-      } else if (window.ratingtoggle == 0) {
-        // if rating is toggled, only 3 results are shown
-        window.length = 3;
-        // sort them by rating
-        data.results = data.results.sort(function(a, b) {
-          return b.rating - a.rating;
-        });
-      } else {
-        // If nothing is toggled, just show all 20 places
-        window.length = data.results.length;
-      }
-      // Create markers based on previous toggles.
-      for (var i = 0; i < window.length; i++) {
-        createMarker([i]);
-      }
-      function createMarker([i]) {
-        var markerpos = data.results[i].geometry.location;
-        var marker = new google.maps.Marker({
-          position: markerpos
-        });
-        marker.setMap(map);
-        marker.setAnimation(google.maps.Animation.DROP);
-        marker.setIcon(
-          "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
-        );
-        // push the markers into an array to erase when a new search begins
-        markersArray.push(marker);
-        // when marker is clicked, open an info window for 3 secs and call the function
-        //cretaeDirections to make direction graphics for it
-        marker.addListener("click", function() {
-          searchnew = 1;
-          const infowindow = new google.maps.InfoWindow({
-            content: JSON.stringify(data.results[i].name).substring(
-              1,
-              JSON.stringify(data.results[i].name).length - 1
-            )
-          });
-          window.currentmarker = markerpos;
-          infowindow.open(map, marker);
-          createDirections();
-          setTimeout(close, 3000);
-          function close() {
-            infowindow.close(map, marker);
-          }
-        });
-
-        // Sets coordinates for direction buttons 1-3 and calls function createDirections.
-        // There probably exists a much more elegant way of doing this, but I am dumb.
-        document.getElementById("b1").addEventListener("click", function() {
-          searchnew = 1;
-          window.currentmarker = data.results[0].geometry.location;
-          createDirections();
-        });
-        document.getElementById("b2").addEventListener("click", function() {
-          searchnew = 1;
-          window.currentmarker = data.results[1].geometry.location;
-          createDirections();
-        });
-        document.getElementById("b3").addEventListener("click", function() {
-          searchnew = 1;
-          window.currentmarker = data.results[2].geometry.location;
-          createDirections();
-        });
-      }
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
-  // Clear the searchbar after the search
-  document.getElementById("searchbar").value = "";
-}
-
-// All directions are created here.
-function createDirections() {
-  // If user toggles normal mode, display normal driving route
-  if (window.transporttoggle == 1) {
-    var request = {
-      origin: window.pos,
-      destination: window.currentmarker,
-      travelMode: "DRIVING"
-    };
-  } else {
-    // If user goes bus, give the user bus route
-    var request = {
-      origin: window.pos,
-      destination: window.currentmarker,
-      travelMode: "TRANSIT",
-      transitOptions: {
-        modes: ["BUS"],
-        routingPreference: "FEWER_TRANSFERS"
-      }
-    };
-  }
-  if (searchnew == 1) {
-    // when route has been decided, display on map.
-    window.directionsService.route(request, function(result, status) {
-      if (status == "OK") {
-        window.directionsRenderer.setDirections(result);
-      }
-    });
-  }
-}*/
