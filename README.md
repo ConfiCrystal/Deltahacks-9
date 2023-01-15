@@ -1,2 +1,3 @@
-# test
-A practice test for group collab
+# DeltaHacks 9 Project
+
+Dason, Andy, Christian

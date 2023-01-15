@@ -9,6 +9,19 @@
 
 * { box-sizing: border-box; }
 
+#installicon {
+  color: white;
+  float: right;
+  font-size: calc(25px + 0.5vw);
+  margin-right: calc(1vw + 5px);
+  margin-top: 1vw;
+}
+
+#installicon:hover {
+  color: var(--blue);
+  cursor: pointer;
+}
+
 body {
   height: 100%;
   width: 100%;

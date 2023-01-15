@@ -1,0 +1,37 @@
+{
+    "name": "ClearSky Travelytics",
+    "short_name": "Travel App",
+    "lang": "en-US",
+    "start_url": "index.html",
+    "display": "standalone",
+    "theme_color": "#FFFFFF",
+    "background_color": "#FFFFFF",
+    "icons": [
+      {
+        "src": "images/64.png",
+        "sizes": "64x64"
+      },
+      {
+        "src": "images/128.png",
+        "sizes": "128x128"
+      },
+      {
+        "src": "images/192.png",
+        "sizes": "192x192",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "images/256.png",
+        "sizes": "256x256"
+      },
+      {
+        "src": "images/384.png",
+        "sizes": "384x384"
+      },
+      {
+        "src": "images/512.png",
+        "sizes": "512x512"
+      }
+    ]
+  }
+  

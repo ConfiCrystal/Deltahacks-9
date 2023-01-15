@@ -1,6 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="ClearSky Travelytics" />
+    <meta name="keywords" content="HTML, CSS, JavaScript, Google Maps" />
+    <meta name="author" content="Dason Wang, Andy Lee, Christian Zhou" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClearSky Travelytics</title>
+    <!-- Redirect to http-->
+    <link rel="canonical" href="deltahacks-9.firebaseapp.com" />
+    <!-- Icons referenced in manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="ClearSky Travelytics" />
+    <meta name="apple-mobile-web-app-title" content="ClearSky Travelytics" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="msapplication-navbutton-color" content="#FFFFFF" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="msapplication-starturl" content="/index.html" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="icon" sizes="64x64" href="images/64x64.png" />
+    <link rel="apple-touch-icon" sizes="64x64" href="images/64.png" />
+    <link rel="icon" sizes="128x128" href="images/128.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="images/128.png" />
+    <link rel="icon" sizes="192x192" href="images/192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="images/192.png" />
+    <link rel="icon" sizes="256x256" href="images/256x256.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="images/256.png" />
+    <link rel="icon" sizes="384x384" href="images/384x384.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="images/384.png" />
+    <link rel="icon" sizes="512x512" href="images/512x512.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="images/512.png" />
+
     <!-- all fonts used -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -9,14 +48,9 @@
     <!-- favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.png">
 
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       href="https://fonts.googleapis.com/css2?family=Ranchers&display=swap"
       rel="stylesheet" />
-
-    <title>Clearsky Travelytics</title>
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -25,18 +59,50 @@
     <link rel="stylesheet" href="/style.css" />
     <!-- import the webpage's javascript file -->
     <script src="/script.js"></script>
+
+    <!--Code to make it installeable-->
+    <script>
+      let deferredPrompt;
+      window.addEventListener("beforeinstallprompt", event => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        event.preventDefault();
+
+        // Stash the event so it can be triggered later.
+        deferredPrompt = event;
+
+        // Attach the install prompt to a user gesture
+        document
+          .querySelector("#installicon")
+          .addEventListener("click", event => {
+            // Show the prompt
+            deferredPrompt.prompt();
+
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then(choiceResult => {
+              if (choiceResult.outcome === "accepted") {
+                console.log("User accepted the A2HS prompt");
+                // Update UI notify the user they can add to home screen
+                document.querySelector("#installicon").style.display = "none";
+              } else {
+                console.log("User dismissed the A2HS prompt");
+              }
+              deferredPrompt = null;
+            });
+          });
+      });
+    </script>
   </head>
   <body>
     <div id="grid-container">
       <div class="nav" id="nav"> 
         <h1 id="title"><span id="fanci">ClearSky </span>Travelytics</h1>
         <img src="/images/earth3Trans.png" id="logo">
+        <span class="material-symbols-outlined" id="installicon">download</span>
       </div>
 
       <div id="scheduleCon">
         <div class="bar" id="scheduleBar">
           <h1 class="subText">Schedule</h1>
-          
         </div>
         <div id="schedules">
           <ul id = "placingTarget">
@@ -126,38 +192,24 @@
           <span onclick="interfaceAdd()" class="bottomButtons" type="button">Confirm Waypoint</span>
         </div>
       </div>
-      <!--
-      <div class="search-container">
-        <input
-          type="text"
-          placeholder="Search destination by keyword..."
-          id="searchbar"
-          name="search"
-        />
-        <button type="submit" id="searchbut" onclick="search()">Submit</button>
-        <button type="submit" class="togglebutton" id ="tb1" onclick="distance()">Give me the 3 CLOSEST restaurants</button>
-        <button type="submit" class="togglebutton" id ="tb2" onclick="rating()">Give me the 3 HIGHEST RATED restaurants</button>
-        <button type="submit" class="togglebutton" id ="tb3" onclick="transport()">Taking the bus?</button>
-        <ul id="travelOptionIcons">
-          <li><span class="material-symbols-outlined">directions_car</span>
-          <li><span class="material-symbols-outlined">flight</span>
-          <li><span class="material-symbols-outlined">directions_walk</span>
-          <li><span class="material-symbols-outlined">directions_bus</span>
-          <li><span class="material-symbols-outlined">directions_bike</span>
-          <li><span class="material-symbols-outlined">train</span>
-          <li><span class="material-symbols-outlined">directions_boat</span>
-      </ul>
-      </div>
-      <div class="button-container" id="bcont">
-        <button type="submit" class="butdir" id ="b1">1</button>
-        <button type="submit" class="butdir" id ="b2">2</button>
-        <button type="submit" class="butdir" id ="b3">3</button>
-      </div>
-                  <li>Carbon Dioxide Emissions: <span id="cValue">n/a</span></li><br>
-            <li>Nitrous Oxide Emissions: <span id="cValue">n/a</span></li><br>
-            <li>Methane Emissions: <span id="cValue">n/a</span></li><br>
-            <li>Predicted Caloroie <span id="cValue">n/a</span></li><br>
-      -->
     </div>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function() {
+          navigator.serviceWorker
+            .register("service-worker.js")
+            .then(reg => {
+              console.log("Service worker registered! 😎", reg);
+            })
+            .catch(err => {
+              console.log("😥 Service worker registration failed: ", err);
+            });
+        });
+      } else {
+        // happens when the app isn't served over a TLS connection (HTTPS)
+        // or if the browser doesn't support service workers
+        console.warn("Service Worker not available");
+      }
+    </script>
   </body>
 </html>
