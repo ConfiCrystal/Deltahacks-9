@@ -1,4 +1,5 @@
-# DeltaHacks 9 Project  
+# ClearSky Travelytics
+Deltahacks 9 Project
 https://devpost.com/software/clearsky-travelytics  
   
 Winner of the Google Development Student Club Challenge  
