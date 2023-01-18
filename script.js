@@ -27,6 +27,32 @@ function conjurePhrase(num) {
   }
 }
 
+/*
+const userParam = {
+    method: "GET"
+};
+*/
+
+/*
+function hmm() {
+    fetch('stuff', userParam)
+        .then(response => response.text())    
+        .then((data) => {
+            console.log(data)
+            console.log("The result is " + data)
+
+            console.log("Insert the fetch request contents directly into HTML...")
+            var script = document.createElement('script');
+            script.onload = function () {
+                //do stuff with the script
+            };
+            script.src = "/idiot.js";
+            document.getElementById("mapInsert").appendChild(script);
+            return data;
+        });
+}
+*/
+
 window.planeRide = true;
 
 // STYLING FUNCTIONS - Purely for CSS support
@@ -60,16 +86,14 @@ function swapG(b) {
 }
 
 // Called when ALL the HTML has finished loading
-document.addEventListener('DOMContentLoaded', function() {
-  window.currentMode = 0; // set current travel Mode to walking by default
-  // Call the function to give node0 special color
-  chooseMode(0)
-  // Set default gender to male
-  swapG(0)
-});
+document.addEventListener('DOMContentLoaded', function() {        
+    window.currentMode = 0; // set current travel Mode to walking by default
+    // Call the function to give node0 special color
+    chooseMode(0);
+    // Set default gender to male
+    swapG(0);
+})
 
-// API key
-var urlkey = "&key=AIzaSyCYfPlorBy4ca8HC42iF6duYZUbfR3ubYM";
 markersT = []
 
 // Travel Mode Selection
